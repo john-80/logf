@@ -5,21 +5,18 @@ type LEVEL int
 const (
 	PanicLevel LEVEL = iota
 	FatalLevel
+	DebugLevel
 	ErrorLevel
 	WarnLevel
 	InfoLevel
-	DebugLevel
 )
 
-
-type PREFIX string
-
 const (
-	FatalFrefix PREFIX = "[FATAL] "
-	ErrorPrefix PREFIX = "[ERROR] "
-	WarnPrefix  PREFIX = "[WARN] "
-	InfoPrefix  PREFIX = "[INFO] "
-	DebugPrefix PREFIX = "[DEBUG] "
+	FatalFrefix string = "[FATAL] "
+	ErrorPrefix string = "[ERROR] "
+	WarnPrefix  string = "[WARN] "
+	InfoPrefix  string = "[INFO] "
+	DebugPrefix string = "[DEBUG] "
 )
 
 type MODE int
