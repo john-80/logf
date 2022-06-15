@@ -11,6 +11,7 @@ const (
 	DebugLevel
 )
 
+
 type PREFIX string
 
 const (
