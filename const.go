@@ -5,10 +5,10 @@ type LEVEL int
 const (
 	PanicLevel LEVEL = iota
 	FatalLevel
-	DebugLevel
 	ErrorLevel
 	WarnLevel
 	InfoLevel
+	DebugLevel
 )
 
 const (

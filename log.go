@@ -16,6 +16,10 @@ var logfile LogFile = LogFile{
 	maxSize:  1 << 30, // 1GB
 }
 
+func init() {
+	logfile.fileFD = os.Stdout
+}
+
 func Config(fileName string, mode MODE, level LEVEL) {
 	logfile.filePath = path.Dir(fileName)
 	os.MkdirAll(logfile.filePath, os.ModePerm) //0755)
