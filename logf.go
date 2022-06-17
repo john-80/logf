@@ -8,17 +8,19 @@ import (
 )
 
 type LogFile struct {
-	fileFD   *os.File
-	fileName string
-	filePath string
-	fileSize int64
-	days     int64
-	level    LEVEL
-	prefix   string
-	mode     MODE
-	maxSize  int64
+	fileFD     *os.File
+	fileName   string
+	filePath   string
+	fileSize   int64
+	createDate time.Time
+	days       int64
+	level      LEVEL
+	prefix     string
+	mode       MODE
+	maxSize    int64
 }
 
+// Write(p []byte) (n int, err error)
 func (l *LogFile) Write(buf []byte) (n int, err error) {
 	if l.fileName == "" {
 		fmt.Printf("%s\n", buf)
@@ -37,7 +39,13 @@ func (l *LogFile) Write(buf []byte) (n int, err error) {
 			l.createLogFile()
 		}
 	default: // days
-
+		if l.fileFD == nil {
+			l.createLogFile()
+		} else if l.isAfterDate() {
+			l.fileFD.Sync()
+			l.fileFD.Close()
+			l.createLogFile()
+		}
 	}
 
 	if l.fileFD == nil {
@@ -77,4 +85,35 @@ func (l *LogFile) tarAndDel(filename string) {
 	delCmd := exec.Command("/bin/bash", "-c",
 		"find "+l.filePath+" -type f -mtime +"+fmt.Sprint("%ld", l.days)+` -exec -rm {} \;`)
 	delCmd.Run()
+}
+
+// check now date is after create date
+// is yes, return true; is no, return false
+func (l *LogFile) isAfterDate() bool {
+	now := time.Now().UTC().Local()
+
+	if l.createDate.IsZero() {
+		l.createDate = now
+		return false
+	}
+
+	if now.Year() > l.createDate.Year() {
+		return true
+	}
+	if now.Year() < l.createDate.Year() {
+		return false
+	}
+	if now.Month() > l.createDate.Month() {
+		return true
+	}
+	if now.Month() < l.createDate.Month() {
+		return false
+	}
+	if now.Day() > l.createDate.Day() {
+		return true
+	}
+	if now.Day() < l.createDate.Day() {
+		return false
+	}
+	return false
 }

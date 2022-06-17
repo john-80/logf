@@ -16,9 +16,9 @@ var logfile LogFile = LogFile{
 	maxSize:  1 << 30, // 1GB
 }
 
-func init() {
+/* func init() {
 	logfile.fileFD = os.Stdout
-}
+} */
 
 func Config(fileName string, mode MODE, level LEVEL) {
 	logfile.filePath = path.Dir(fileName)
@@ -28,7 +28,7 @@ func Config(fileName string, mode MODE, level LEVEL) {
 	SetLevel(level)
 	SetMode(mode)
 
-	log.SetOutput(logfile.fileFD)
+	log.SetOutput(&logfile)
 	log.SetFlags(log.Llongfile | log.Ldate | log.Ltime)
 }
 
@@ -50,28 +50,44 @@ func SetSize(size int64) {
 
 func Debugf(format string, args ...interface{}) {
 	if logfile.level >= DebugLevel {
-		log.SetPrefix(blue(DebugPrefix))
+		if logfile.fileFD == os.Stdout {
+			log.SetPrefix(blue(DebugPrefix))
+		} else {
+			log.SetPrefix(DebugPrefix)
+		}
 		log.Output(2, fmt.Sprintf(format, args...))
 	}
 }
 
 func Infof(format string, args ...interface{}) {
 	if logfile.level >= InfoLevel {
-		log.SetPrefix(green(InfoPrefix))
+		if logfile.fileFD == os.Stdout {
+			log.SetPrefix(green(InfoPrefix))
+		} else {
+			log.SetPrefix(InfoPrefix)
+		}
 		log.Output(2, fmt.Sprintf(format, args...))
 	}
 }
 
 func Warnf(format string, args ...interface{}) {
 	if logfile.level >= WarnLevel {
-		log.SetPrefix(yellow(WarnPrefix))
+		if logfile.fileFD == os.Stdout {
+			log.SetPrefix(yellow(WarnPrefix))
+		} else {
+			log.SetPrefix(WarnPrefix)
+		}
 		log.Output(2, fmt.Sprintf(format, args...))
 	}
 }
 
 func Errorf(format string, args ...interface{}) {
 	if logfile.level >= ErrorLevel {
-		log.SetPrefix(red(ErrorPrefix))
+		if logfile.fileFD == os.Stdout {
+			log.SetPrefix(red(ErrorPrefix))
+		} else {
+			log.SetPrefix(ErrorPrefix)
+		}
 		log.Output(2, fmt.Sprintf(format, args...))
 	}
 }
